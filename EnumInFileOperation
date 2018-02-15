@@ -1,0 +1,121 @@
+Sub FileOps()
+Dim str As String
+Dim fileName As String, documentText As String, fileNo As Integer, strLine As String, openingParen As Integer, closingParen As Integer, enclosedValue As String
+fileName = "H:\My Documents\type_def.h"
+fileNo = FreeFile 'Get first free file number
+ str = """" & "NO_MESS" & """" & "1"
+Open fileName For Input As #fileNo
+documentText = Input$(LOF(fileNo), fileNo)
+Close #fileNo
+
+
+Dim firstTerm As String
+Dim secondTerm As String
+
+Dim startPos As Long 'Stores the starting position of firstTerm
+Dim stopPos As Long 'Stores the starting position of secondTerm based on first term's location
+Dim nextPosition As Long
+
+nextPosition = 1
+
+firstTerm = "typedef enum"
+secondTerm = "}"
+
+
+Do Until nextPosition = 0
+        startPos = InStr(nextPosition, documentText, firstTerm, vbTextCompare)
+        stopPos = InStr(startPos, documentText, secondTerm, vbTextCompare)
+        StringWithBrackets = Mid$(documentText, startPos + Len(firstTerm), stopPos - startPos - Len(secondTerm))
+        openingParen = InStr(StringWithBrackets, "{")
+        closingParen = InStr(StringWithBrackets, "}")
+        enclosedValue = Mid(StringWithBrackets, openingParen + 1, closingParen - openingParen - 1)
+        enumSearch (enclosedValue)
+        nextPosition = InStr(stopPos, documentText, firstTerm, vbTextCompare)
+Loop
+
+
+End Sub
+
+Public Function enumSearch(EnumString As String)
+
+
+Dim substrs() As String
+Dim num As Variant
+Dim Val As Long
+Dim index As Integer
+Dim upper As Integer
+Dim lower As Integer
+Dim Prev_Val As Integer
+
+'TestString2 = "{VMM_STW_OK , VMM_STW_INI, VMM_STW_ERR , VMM_STW_ERR_INI}"
+substrs = Split(EnumString, ",")
+index = 0
+lower = LBound(substrs)
+upper = UBound(substrs)
+Prev_Val = 0
+
+
+For Each num In substrs
+    Val = NumericOnly(CStr(num))
+    If (Val <> 0) Then
+        If Prev_Val < Val Then
+            Prev_Val = Val
+            lower = index
+        End If
+    End If
+    index = index + 1
+Next num
+
+
+If Prev_Val = 0 Then
+    Prev_Val = upper + 1
+    MsgBox ("Size of enum=" & Prev_Val)
+Else
+    Prev_Val = Prev_Val + upper - lower + 1
+    MsgBox ("Size of enum=" & Prev_Val)
+End If
+
+MsgBox ("number of bits required for Size of enum=" & GetBitSize(Prev_Val))
+End Function
+
+
+Public Function NumericOnly(s2 As String) As Long
+Dim replace_hyphen As String
+replace_hyphen = " "
+Static re As VBScript_RegExp_55.RegExp
+If re Is Nothing Then Set re = New RegExp
+re.IgnoreCase = True
+re.Global = True
+re.Pattern = "[^\d]"
+
+If IsNumeric(re.Replace(s2, replace_hyphen)) Then
+    NumericOnly = re.Replace(s2, replace_hyphen)
+Else
+    NumericOnly = 0
+End If
+End Function
+
+
+Public Function GetBitSize(enum_size As Integer) As Integer
+Dim bit_size As Integer
+bit_size = 0
+If enum_size >= 2 Then
+    
+    enum_size = enum_size - 1
+    enum_size = enum_size Or (enum_size / 2)
+    enum_size = enum_size Or (enum_size / 4)
+    enum_size = enum_size Or (enum_size / 8)
+    enum_size = enum_size Or (enum_size / 16)
+    enum_size = enum_size + 1
+
+    While (enum_size <> 1)
+        bit_size = bit_size + 1
+        enum_size = enum_size / 2
+    Wend
+    
+Else
+    bit_size = 1
+End If
+GetBitSize = bit_size
+End Function
+
