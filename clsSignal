@@ -1,0 +1,8 @@
+Option Explicit
+
+Public SignalName As String
+Public SignalValue  As String
+
+Property Get SignalDetail() As String
+SignalDetail = SignalName & " " & SignalValue
+End Property
