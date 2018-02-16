@@ -1,0 +1,33 @@
+Sub CollectionOps()
+Dim SignalString As String
+SignalString = "VAL_ 844 ASCM_Stat 0 ""NO_MESS"" 1 ""DUMP"" 2 ""PARK"" 3 ""AERO"" 4 ""NVL"" 5 ""OR1"" 6 ""ORL2"" 7 ""EEHNA"" 8 ""RAISE"" 9 ""LOWER"" 10 ""RL_INT"" 11 ""SRVS"" 12 ""AERO2"" 15 ""SNA"" ;"
+Dim SubStrings() As String
+SubStrings = Split(SignalString)
+lower = LBound(SubStrings)
+upper = UBound(SubStrings)
+
+
+Dim SignalCollection As New Collection
+
+
+Dim i As Variant
+For i = (lower + 3) To (upper - 1)
+    Dim InstClsSignal As New clsSignal
+    InstClsSignal.SignalValue = SubStrings(i)
+    InstClsSignal.SignalName = SubStrings(i + 1)
+    SignalCollection.Add Item:=InstClsSignal
+    i = i + 1
+    Set InstClsSignal = Nothing
+Next
+'Dim rC As String
+'Dim v As Variant
+'With CreateObject("VBScript.RegExp")
+'    .Pattern = "(\d+|\D+)"
+'    .Global = True
+'    For Each rC In Substr
+'        v = Split(Mid(.Replace(rC, "|$1"), 2), "|")
+'        rC.Offset(, 1).Resize(, UBound(v) + 1).Value = v
+'    Next rC
+'End With
+
+End Sub
