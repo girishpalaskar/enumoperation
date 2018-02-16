@@ -1,0 +1,55 @@
+Sub CollectionOps()
+Dim SignalString As String
+SignalString = "{VMM_STW_OK , VMM_STW_INI=96 , VMM_STW_ERR , VMM_STW_ERR_INI=98}"
+Dim SubStrings() As String
+SubStrings = Split(SignalString, ",")
+Dim SubSubStrings() As String
+
+lower = LBound(SubStrings)
+upper = UBound(SubStrings)
+
+
+Dim SignalCollection As New Collection
+
+Dim modifiedSignalValue As Integer
+modifiedSignalValue = 0
+
+Dim i As Variant
+For i = lower To upper
+    Dim InstClsSignal As New clsSignal
+    
+    If InStr(SubStrings(i), "=") > 0 Then
+        SubSubStrings = Split(SubStrings(i), "=")
+        InstClsSignal.SignalValue = NumericOnly(SubSubStrings(1))
+        InstClsSignal.SignalName = Trim(SubSubStrings(0))
+    Else
+        InstClsSignal.SignalValue = modifiedSignalValue
+        InstClsSignal.SignalName = Trim(SubStrings(i))
+    End If
+    SignalCollection.Add Item:=InstClsSignal
+
+    If InstClsSignal.SignalValue > i Then
+       modifiedSignalValue = CStr(InstClsSignal.SignalValue)
+    End If
+    modifiedSignalValue = modifiedSignalValue + 1
+    Set InstClsSignal = Nothing
+Next
+
+
+End Sub
+
+Public Function NumericOnly(s2 As String) As Long
+Dim replace_hyphen As String
+replace_hyphen = " "
+Static re As VBScript_RegExp_55.RegExp
+If re Is Nothing Then Set re = New RegExp
+re.IgnoreCase = True
+re.Global = True
+re.Pattern = "[^\d]"
+
+If IsNumeric(re.Replace(s2, replace_hyphen)) Then
+    NumericOnly = re.Replace(s2, replace_hyphen)
+Else
+    NumericOnly = 0
+End If
+End Function
