@@ -79,16 +79,12 @@ Object s_po = sobj
 				if (b==0) 
 				{
 
-				//s_o."MY20_JT"=t_o."TestResult"
+				set(s_o."MY20_JT",t_o."TestResult")
 
 				print t_child_str "\t found child \n" 
 				//print "3"
 				//count1++
-string s1,s2
-s1=s_o."MY20_JT"
-s2=t_o."TestResult"
-s1=s2
-print s1 "\n"
+
 				}
 
 			}
