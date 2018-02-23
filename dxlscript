@@ -1,0 +1,101 @@
+pragma runLim, 0
+Module m,src,tgt
+
+int funTrimString(string str)
+{
+int count2=0
+int i=0
+
+	for i in 0:length(str) do
+	{
+		char temp=str[i]
+		if(temp=='_')
+		{
+			count2=count2+1
+		}
+		if(count2==3)
+		{
+			return i+1
+		}
+	}
+}
+
+int count=0
+for m in current Project do
+{
+if(count==0)
+{
+src= m
+print src."Name" "\n"
+
+}
+if(count==1)
+{
+tgt= m
+print tgt."Name" "\n"
+
+}
+count++
+}
+
+Object sobj
+Object tobj
+int j
+int k
+int count1
+count1=0
+for sobj in src do
+{
+Object s_o
+Object s_po = sobj
+	for s_o in s_po do
+	{
+	string s_str=s_po."Object Heading"
+	string s_child_str=s_o."Object Heading"
+	j=funTrimString(s_child_str)
+	s_child_str=s_child_str[j:]
+	//print "1"
+		for tobj in tgt do
+		{
+		Object t_o
+		Object t_po = tobj
+		
+		string t_str=t_po."Object Heading"
+		
+		int a,b
+		 a= cistrcmp(t_str,s_str)
+		if (a==0) 
+		
+		{
+		print t_str "\n"//"found parent \n" 
+		//print "2"
+			for t_o in t_po do
+			{
+			string t_child_str=t_o."Object Heading"
+			k=funTrimString(t_child_str)
+			t_child_str=t_child_str[k:]
+			//print t_child_str "\n"
+				 b = cistrcmp(t_child_str,s_child_str)
+				if (b==0) 
+				{
+
+				//s_o."MY20_JT"=t_o."TestResult"
+
+				print t_child_str "\t found child \n" 
+				//print "3"
+				//count1++
+string s1,s2
+s1=s_o."MY20_JT"
+s2=t_o."TestResult"
+s1=s2
+print s1 "\n"
+				}
+
+			}
+			
+		}
+	
+}
+
+}
+}
